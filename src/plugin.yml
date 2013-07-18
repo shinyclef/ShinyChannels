@@ -1,0 +1,51 @@
+depend: [ShinyBase]
+name: ShinyChannels
+main: com.hotmail.shinyclef.shinychannels.ShinyChannels
+version: 2.1
+commands:
+    vip:
+        description: Sends a message to the /vip chat channel.
+        usage: /<command> [message]
+    vipadd:
+        description: Adds a player to the /vip chat channel.
+        usage: /<command> [playername]
+        permission: ShinyVIP.vipadd
+        permission-message: You don't have permission <permission>
+    vipremove:
+        description: Removes a player to the /vip chat channel.
+        usage: /<command> [playername]
+        permission: ShinyVIP.vipremove
+        permission-message: You don't have permission <permission>
+    viplist:
+        description: Displays a list of players in the /vip channel (including offline players).
+        usage: /<command>
+    mb:
+        description: Sends a message to the /mb (mod broadcast) chat channel.
+        usage: /mb [message]
+    sb:
+        description: Sends a message to the /sb (staff broadcast) chat channel.
+        usage: /sb [message]
+    sbadd:
+        description: Adds a player to the staff broadcast channel as a temporary guest.
+        usage: /sbadd [player]
+    sbremove:
+        description: Removes a guest from the staff broadcast channel.
+        usage: /sbremove [player]
+    sblist:
+        description: Sends a message to the /sb (staff broadcast) chat channel.
+        usage: /sblist
+
+
+
+permissions:
+    ShinyVIP.*:
+        description: Gives access to all ShinyVIP commands.
+        children:
+            ShinyVIP.vipadd: true
+            ShinyVIP.vipremove: true
+    ShinyVIP.vipadd:
+        description: Allows you to add a player to the /vip chat channel.
+        default: op
+    ShinyVIP.vipremove:
+        description: Allows you to remove a player from the /vip chat channel.
+        default: op
