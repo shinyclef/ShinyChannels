@@ -26,7 +26,7 @@ public class EventListener implements Listener
     public void eventCommandPreprocess(PlayerCommandPreprocessEvent e)
     {
         final String message = e.getMessage().trim();
-        if (message.startsWith("/mb"))
+        if (message.toLowerCase().startsWith("/mb"))
         {
             e.setCancelled(true);
 

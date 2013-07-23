@@ -26,7 +26,7 @@ public class StaffChat
 
     public static void initializeStaffChat(ShinyChannels thePlugin, ShinyBaseAPI theShinyBaseAPI)
     {
-        plugin = thePlugin; //test
+        plugin = thePlugin;
         shinyBaseAPI = theShinyBaseAPI;
         server = plugin.getServer();
         staffChatGuests = new ArrayList<String>();
