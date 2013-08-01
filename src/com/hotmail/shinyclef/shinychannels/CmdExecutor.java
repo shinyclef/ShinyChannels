@@ -1,14 +1,8 @@
 package com.hotmail.shinyclef.shinychannels;
-import com.hotmail.shinyclef.shinybase.ShinyBaseAPI;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Author: Shinyclef
@@ -21,27 +15,7 @@ public class CmdExecutor implements CommandExecutor
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        if (command.getName().equalsIgnoreCase("vip"))
-        {
-            return VIPChat.vip(sender, command, label, args);
-        }
-
-        if (command.getName().equalsIgnoreCase("vipadd"))
-        {
-            return VIPChat.vipAdd(sender, command, label, args);
-        }
-
-        if (command.getName().equalsIgnoreCase("vipremove"))
-        {
-            return VIPChat.vipRemove(sender, command, label, args);
-        }
-
-        if (command.getName().equalsIgnoreCase("viplist"))
-        {
-            return VIPChat.vipList(sender, command, label, args);
-        }
-
-        if (command.getName().equalsIgnoreCase("sb"))
+/*        if (command.getName().equalsIgnoreCase("sb"))
         {
             return StaffChat.staffChat(sender, args);
         }
@@ -57,8 +31,54 @@ public class CmdExecutor implements CommandExecutor
         }
 
         if (command.getName().equalsIgnoreCase("sblist"))
-        {
+        {                                                 8
             return StaffChat.staffList(sender, args);
+        }*/
+
+        // MB is in event listener
+
+        // -------------------- SB -------------------- //
+
+        if (command.getName().equalsIgnoreCase("sb"))
+        {
+            return PermissionChat.chat(sender, args, "sb");
+        }
+
+        if (command.getName().equalsIgnoreCase("sbadd"))
+        {
+            return PermissionChat.add(sender, args, "sb");
+        }
+
+        if (command.getName().equalsIgnoreCase("sbremove"))
+        {
+            return PermissionChat.remove(sender, args, "sb");
+        }
+
+        if (command.getName().equalsIgnoreCase("sblist"))
+        {
+            return PermissionChat.list(sender, args, "sb");
+        }
+
+        // -------------------- VIP -------------------- //
+
+        if (command.getName().equalsIgnoreCase("vip"))
+        {
+            return PermissionChat.chat(sender, args, "vip");
+        }
+
+        if (command.getName().equalsIgnoreCase("vipadd"))
+        {
+            return PermissionChat.add(sender, args, "vip");
+        }
+
+        if (command.getName().equalsIgnoreCase("vipremove"))
+        {
+            return PermissionChat.remove(sender, args, "vip");
+        }
+
+        if (command.getName().equalsIgnoreCase("viplist"))
+        {
+            return PermissionChat.list(sender, args, "vip");
         }
 
         return false;

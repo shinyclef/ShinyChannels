@@ -1,10 +1,13 @@
 package com.hotmail.shinyclef.shinychannels;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * User: Peter
@@ -14,33 +17,82 @@ import java.util.HashSet;
 
 public class EventListener implements Listener
 {
-    private ShinyChannels plugin;
-
     public EventListener(ShinyChannels plugin)
     {
-        this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler
     public void eventCommandPreprocess(PlayerCommandPreprocessEvent e)
     {
-        final String message = e.getMessage().trim();
-        if (message.toLowerCase().startsWith("/mb"))
+        //cancel any commands that don't start with /mb
+        final String message = e.getMessage().trim().toLowerCase();
+        if (!message.startsWith("/mb"))
         {
-            e.setCancelled(true);
-
-            String sentence;
-            if (e.getMessage().length() < 5)
-            {
-                sentence = null;
-            }
-            else
-            {
-                sentence = e.getMessage().substring(4);
-            }
-
-            StaffChat.modChat(e.getPlayer(), sentence);
+            return;
         }
+
+        //setup command, sender and string for args
+        String command;
+        if (message.contains(" "))
+        {
+            command = message.substring(1, message.indexOf(" "));
+        }
+        else
+        {
+            command = message.substring(1);
+        }
+        CommandSender sender = e.getPlayer();
+        String argsString;
+        if (message.contains(" "))
+        {
+             argsString = message.substring(message.indexOf(" ") + 1);
+        }
+        else
+        {
+            argsString = "";
+        }
+
+        //convert the list to args array
+        String [] args;
+        if (argsString != "")
+        {
+            args = argsString.split(" ");
+        }
+        else
+        {
+            args = new String[0];
+        }
+
+        //send all our data to parser
+        parseMBCommand(command, sender, args);
+
+        //cancel original command
+        e.setCancelled(true);
+    }
+
+    private boolean parseMBCommand(String command, CommandSender sender, String[] args)
+    {
+        if (command.equals("mb"))
+        {
+            return PermissionChat.chat(sender, args, "mb");
+        }
+
+        if (command.equals("mbadd"))
+        {
+            return PermissionChat.add(sender, args, "mb");
+        }
+
+        if (command.equals("mbremove"))
+        {
+            return PermissionChat.remove(sender, args, "mb");
+        }
+
+        if (command.equals("mblist"))
+        {
+            return PermissionChat.list(sender, args, "mb");
+        }
+
+        return true;
     }
 }

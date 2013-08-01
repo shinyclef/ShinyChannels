@@ -1,7 +1,9 @@
 package com.hotmail.shinyclef.shinychannels;
 
 import com.hotmail.shinyclef.shinybase.ShinyBase;
+import com.hotmail.shinyclef.shinybase.ShinyBaseAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -15,8 +17,6 @@ import java.util.List;
 
 public class ShinyChannels extends JavaPlugin
 {
-    private CmdExecutor commandExecutor;
-    private EventListener eventListener;
     private ShinyBase shinyBase;
 
     @Override
@@ -28,32 +28,35 @@ public class ShinyChannels extends JavaPlugin
             shinyBase =(ShinyBase) p;
         }
 
-        eventListener = new EventListener(this);
-        commandExecutor = new CmdExecutor();
-        getCommand("vip").setExecutor(commandExecutor);
-        getCommand("vipadd").setExecutor(commandExecutor);
-        getCommand("vipremove").setExecutor(commandExecutor);
-        getCommand("viplist").setExecutor(commandExecutor);
+        new EventListener(this);
+        CommandExecutor commandExecutor = new CmdExecutor();
+
+        //MB
         getCommand("mb").setExecutor(commandExecutor);
+        getCommand("mbadd").setExecutor(commandExecutor);
+        getCommand("mbremove").setExecutor(commandExecutor);
+        getCommand("mblist").setExecutor(commandExecutor);
+
+        //EXP
         getCommand("sb").setExecutor(commandExecutor);
         getCommand("sbadd").setExecutor(commandExecutor);
         getCommand("sbremove").setExecutor(commandExecutor);
         getCommand("sblist").setExecutor(commandExecutor);
 
+        // VIP
+        getCommand("vip").setExecutor(commandExecutor);
+        getCommand("vipadd").setExecutor(commandExecutor);
+        getCommand("vipremove").setExecutor(commandExecutor);
+        getCommand("viplist").setExecutor(commandExecutor);
 
-        VIPChat.initializeVipChat(this, shinyBase.getShinyBaseAPI());
-        StaffChat.initializeStaffChat(this, shinyBase.getShinyBaseAPI());
+        ShinyBaseAPI shinyBaseAPI = shinyBase.getShinyBaseAPI();
+        PermissionChat.initialize(this, shinyBaseAPI);
     }
 
     @Override
     public void onDisable()
     {
 
-    }
-
-    public static List<String> getVIPList()
-    {
-        return VIPChat.getVIPList();
     }
 
     public static String makeSentence(String[] args)
