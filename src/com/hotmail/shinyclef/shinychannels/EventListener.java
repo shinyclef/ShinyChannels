@@ -26,8 +26,8 @@ public class EventListener implements Listener
     public void eventCommandPreprocess(PlayerCommandPreprocessEvent e)
     {
         //cancel any commands that don't start with /mb
-        final String message = e.getMessage().trim().toLowerCase();
-        if (!message.startsWith("/mb"))
+        final String message = e.getMessage().trim();
+        if (!message.toLowerCase().startsWith("/mb"))
         {
             return;
         }
@@ -36,11 +36,11 @@ public class EventListener implements Listener
         String command;
         if (message.contains(" "))
         {
-            command = message.substring(1, message.indexOf(" "));
+            command = message.substring(1, message.indexOf(" ")).toLowerCase();
         }
         else
         {
-            command = message.substring(1);
+            command = message.substring(1).toLowerCase();
         }
         CommandSender sender = e.getPlayer();
         String argsString;
