@@ -55,7 +55,7 @@ public class EventListener implements Listener
 
         //convert the list to args array
         String [] args;
-        if (argsString != "")
+        if (!argsString.equals(""))
         {
             args = argsString.split(" ");
         }
