@@ -39,3 +39,6 @@ commands:
     viplist:
         description: Displays a list of players in the /vip channel (including offline players).
         usage: /<command>
+    mail:
+        description: Displays a list of players in the /vip channel (including offline players).
+        usage: YOLO!!!!

@@ -15,68 +15,70 @@ public class CmdExecutor implements CommandExecutor
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-/*        if (command.getName().equalsIgnoreCase("sb"))
+        // -------------------- SB -------------------- //
+
+        String com = command.getName().toLowerCase();
+
+        if (com.equals("mb"))
         {
-            return StaffChat.staffChat(sender, args);
+            return PermissionChat.chat(sender, args, "mb");
         }
 
-        if (command.getName().equalsIgnoreCase("sbadd"))
+        else if (com.equals("mbadd"))
         {
-            return StaffChat.staffChatAdd(sender, args);
+            return PermissionChat.add(sender, args, "mb");
         }
 
-        if (command.getName().equalsIgnoreCase("sbremove"))
+        else if (com.equals("mbremove"))
         {
-            return StaffChat.staffChatRemove(sender, args);
+            return PermissionChat.remove(sender, args, "mb");
         }
 
-        if (command.getName().equalsIgnoreCase("sblist"))
-        {                                                 8
-            return StaffChat.staffList(sender, args);
-        }*/
-
-        // MB is in event listener
+        else if (com.equals("mblist"))
+        {
+            return PermissionChat.list(sender, args, "mb");
+        }
 
         // -------------------- SB -------------------- //
 
-        if (command.getName().equalsIgnoreCase("sb"))
+        else if (com.equals("sb"))
         {
             return PermissionChat.chat(sender, args, "sb");
         }
 
-        if (command.getName().equalsIgnoreCase("sbadd"))
+        else if (com.equals("sbadd"))
         {
             return PermissionChat.add(sender, args, "sb");
         }
 
-        if (command.getName().equalsIgnoreCase("sbremove"))
+        else if (com.equals("sbremove"))
         {
             return PermissionChat.remove(sender, args, "sb");
         }
 
-        if (command.getName().equalsIgnoreCase("sblist"))
+        else if (com.equals("sblist"))
         {
             return PermissionChat.list(sender, args, "sb");
         }
 
         // -------------------- VIP -------------------- //
 
-        if (command.getName().equalsIgnoreCase("vip"))
+        else if (com.equals("vip"))
         {
             return PermissionChat.chat(sender, args, "vip");
         }
 
-        if (command.getName().equalsIgnoreCase("vipadd"))
+        else if (com.equals("vipadd"))
         {
             return PermissionChat.add(sender, args, "vip");
         }
 
-        if (command.getName().equalsIgnoreCase("vipremove"))
+        else if (com.equals("vipremove"))
         {
             return PermissionChat.remove(sender, args, "vip");
         }
 
-        if (command.getName().equalsIgnoreCase("viplist"))
+        else if (com.equals("viplist"))
         {
             return PermissionChat.list(sender, args, "vip");
         }

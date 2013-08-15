@@ -1,4 +1,4 @@
-package com.hotmail.shinyclef.shinychannels;
+/*package com.hotmail.shinyclef.shinychannels;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-/**
+*//**
  * User: Peter
  * Date: 14/07/13
  * Time: 5:23 AM
- */
+ *//*
 
 public class EventListener implements Listener
 {
@@ -69,6 +69,8 @@ public class EventListener implements Listener
 
         //cancel original command
         e.setCancelled(true);
+
+        e.getPlayer().getServer().broadcastMessage("TEST");
     }
 
     private boolean parseMBCommand(String command, CommandSender sender, String[] args)
@@ -95,4 +97,4 @@ public class EventListener implements Listener
 
         return true;
     }
-}
+}*/

@@ -1,6 +1,7 @@
 package com.hotmail.shinyclef.shinychannels;
 
 import com.hotmail.shinyclef.shinybase.ShinyBaseAPI;
+import com.hotmail.shinyclef.shinybridge.ShinyBridgeAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -21,14 +22,22 @@ public class PermissionChat
 {
     private static ShinyChannels plugin;
     private static ShinyBaseAPI shinyBaseAPI;
+    private static ShinyBridgeAPI shinyBridgeAPI;
     private static Server server;
     private static Map<String, ChannelData> dataMap;
+    private static boolean hasBridge = true;
 
-    public static void initialize(ShinyChannels thePlugin, ShinyBaseAPI theShinyBaseAPI)
+    public static void initialize(ShinyChannels thePlugin, ShinyBaseAPI theShinyBaseAPI,
+                                  ShinyBridgeAPI theShinyBridgeAPI)
     {
         plugin = thePlugin;
         shinyBaseAPI = theShinyBaseAPI;
+        shinyBridgeAPI = theShinyBridgeAPI;
         server = plugin.getServer();
+        if (shinyBridgeAPI == null)
+        {
+            hasBridge = false;
+        }
 
         //individual guest maps
         List<String> mbGuestList = new ArrayList<String>();
@@ -106,17 +115,17 @@ public class PermissionChat
             guestQty = "(+" + ch.guestList.size() + ") ";
         }
 
-        //perms broadcast
-        server.broadcast(ChatColor.RED + ch.tag + guestQty + sender.getName() + ": "
-                + ch.colour + sentence, ch.chatPerm);
+        //broadcast
+        broadcastMessage(ChatColor.RED + ch.tag + guestQty + sender.getName() + ": " +
+                ch.colour + sentence, ch.chatPerm);
 
         //guest broadcast
         for (String playerName : ch.guestList)
         {
             if (server.getOfflinePlayer(playerName).isOnline())
             {
-                server.getPlayer(playerName).sendMessage(ChatColor.RED + ch.tag + " " + sender.getName()
-                        + ": " + ch.colour + sentence);
+                server.getPlayer(playerName).sendMessage(ChatColor.RED + ch.tag + " " + sender.getName() +
+                        ": " + ch.colour + sentence);
             }
         }
 
@@ -282,5 +291,27 @@ public class PermissionChat
         //return a list of players to command sender
         sender.sendMessage(userList);
         return true;
+    }
+
+    /* Helpers */
+    private static void broadcastMessage(String message, String permission)
+    {
+        //send to bridge clients if we have bridge
+        if (hasBridge)
+        {
+            shinyBridgeAPI.broadcastMessage(message, permission, true);
+        }
+        else
+        {
+            //standard broadcast
+            server.broadcast(message, permission);
+        }
+    }
+
+
+
+    public static void test()
+    {
+        plugin.getServer().broadcastMessage("YOLO!!!");
     }
 }
