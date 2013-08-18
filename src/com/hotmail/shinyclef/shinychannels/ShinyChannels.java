@@ -1,5 +1,6 @@
 package com.hotmail.shinyclef.shinychannels;
 
+import com.hotmail.shinyclef.shinybase.ModChatHandler;
 import com.hotmail.shinyclef.shinybase.ShinyBase;
 import com.hotmail.shinyclef.shinybase.ShinyBaseAPI;
 import com.hotmail.shinyclef.shinybridge.ShinyBridge;
@@ -20,22 +21,19 @@ import java.util.List;
 
 public class ShinyChannels extends JavaPlugin
 {
-    private ShinyBaseAPI shinyBaseAPI;
+    private static ShinyBaseAPI shinyBaseAPI;
 
     @Override
     public void onEnable()
     {
-        //default config
-        saveDefaultConfig();
-
         Plugin base = Bukkit.getPluginManager().getPlugin("ShinyBase");
         if (base != null)
         {
             shinyBaseAPI = ((ShinyBase)base).getShinyBaseAPI();
         }
 
-        new EventListener(this);
-        CommandExecutor commandExecutor = new CmdExecutor();
+        new EventListener(this, shinyBaseAPI);
+        CommandExecutor commandExecutor = new CmdExecutor(shinyBaseAPI.getModChatHandler());
 
         //MB
         shinyBaseAPI.takeOverBukkitCommand(this, "mb", commandExecutor);
@@ -83,5 +81,12 @@ public class ShinyChannels extends JavaPlugin
         while (i < args.length);
 
         return sentence;
+    }
+
+    /* Getters */
+
+    public static ShinyBaseAPI getShinyBaseAPI()
+    {
+        return shinyBaseAPI;
     }
 }

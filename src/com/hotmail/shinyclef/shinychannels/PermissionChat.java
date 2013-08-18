@@ -1,5 +1,6 @@
 package com.hotmail.shinyclef.shinychannels;
 
+import com.hotmail.shinyclef.shinybase.ModChatHandler;
 import com.hotmail.shinyclef.shinybase.ShinyBaseAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -20,13 +21,13 @@ public class PermissionChat
     private static ShinyBaseAPI base;
     private static Server server;
     private static Map<String, ChannelData> dataMap;
-    private static List<String> modChatToggledOff;
 
-    public static void initialize(ShinyChannels thePlugin, ShinyBaseAPI theShinyBaseAPI)
+
+    public static void initialize(ShinyChannels plugin, ShinyBaseAPI shinyBaseAPI)
     {
-        plugin = thePlugin;
-        base = theShinyBaseAPI;
-        server = plugin.getServer();
+        PermissionChat.plugin = plugin;
+        base = shinyBaseAPI;
+        server = PermissionChat.plugin.getServer();
 
         //individual guest maps
         List<String> mbGuestList = new ArrayList<String>();
@@ -41,13 +42,6 @@ public class PermissionChat
                 ChatColor.YELLOW, "rolyd.exp", "rolyd.mod", sbGuestList));
         dataMap.put("vip", new ChannelData("vip", "VIP", "VIP", "[VIP]", ChatColor.YELLOW,
                 ChatColor.AQUA, "rolyd.vip", "rolyd.mod", vipGuestList));
-
-        //modChatToggleOffList
-        modChatToggledOff = plugin.getConfig().getStringList("ModChatOff");
-        if (modChatToggledOff == null)
-        {
-            modChatToggledOff = new ArrayList<String>();
-        }
     }
 
     private static class ChannelData
@@ -289,69 +283,14 @@ public class PermissionChat
         return true;
     }
 
-    public static boolean standardChat(CommandSender sender, String[] args)
+    public static boolean processNormalTChat(CommandSender sender, String[] args)
     {
-        String sentence;
-        if (args.length > 0)
+        if (args.length < 1)
         {
-            sentence = ShinyChannels.makeSentence(args);
-        }
-        else
-        {
-            sentence = "";
-        }
-
-        if (sentence.equals(""))
-        {
-            return true; //do nothing!
-        }
-
-        if (sender instanceof Player)
-        {
-            if (!modChatToggledOff.contains(sender.getName().toLowerCase()))
-            {
-                sentence = EventListener.MOD_BYPASS_CHAR + sentence;
-            }
-
-            ((Player) sender).chat(sentence);
-        }
-
-        return true;
-    }
-
-    public static boolean changeModChatToggle(CommandSender sender, boolean defaultIsMB)
-    {
-        if (!sender.hasPermission("rolyd.mod"))
-        {
-            sender.sendMessage(ChatColor.RED + "You do not have permission to do that.");
             return true;
         }
-
-        if (defaultIsMB)
-        {
-            modChatToggledOff.remove(sender.getName().toLowerCase());
-        }
-        else
-        {
-            modChatToggledOff.add(sender.getName().toLowerCase());
-        }
-
-        //feedback
-        sender.sendMessage(ChatColor.DARK_GREEN + "Default chat set to " + ChatColor.BLUE +
-                (defaultIsMB ? "MB" : "standard") + ChatColor.DARK_GREEN + ".");
-
-        //save config
-        plugin.getConfig().set("ModChatOff", modChatToggledOff);
-        plugin.saveConfig();
-
+        String sentence = ShinyChannels.makeSentence(args);
+        base.getModChatHandler().modStandardChat(sender, sender.getName(), sentence);
         return true;
-    }
-
-
-    /* Getters */
-
-    public static List<String> getModChatToggledOff()
-    {
-        return modChatToggledOff;
     }
 }

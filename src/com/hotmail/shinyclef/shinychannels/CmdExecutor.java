@@ -1,5 +1,6 @@
 package com.hotmail.shinyclef.shinychannels;
 
+import com.hotmail.shinyclef.shinybase.ModChatHandler;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,6 +17,13 @@ import java.util.Set;
 
 public class CmdExecutor implements CommandExecutor
 {
+    private ModChatHandler modChatHandler;
+
+    public CmdExecutor(ModChatHandler modChatHandler)
+    {
+        this.modChatHandler = modChatHandler;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
@@ -92,17 +100,17 @@ public class CmdExecutor implements CommandExecutor
 
         else if (com.equals("t"))
         {
-            return PermissionChat.standardChat(sender, args);
+            return PermissionChat.processNormalTChat(sender, args);
         }
 
         else if (com.equals("mbon"))
         {
-            return PermissionChat.changeModChatToggle(sender, true);
+            return modChatHandler.changeModChatToggle(sender, true);
         }
 
         else if (com.equals("mboff"))
         {
-            return PermissionChat.changeModChatToggle(sender, false);
+            return modChatHandler.changeModChatToggle(sender, false);
         }
 
         return false;
