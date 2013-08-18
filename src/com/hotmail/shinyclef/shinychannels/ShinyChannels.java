@@ -21,25 +21,20 @@ import java.util.List;
 public class ShinyChannels extends JavaPlugin
 {
     private ShinyBaseAPI shinyBaseAPI;
-    private ShinyBridgeAPI shinyBridgeAPI;
 
     @Override
     public void onEnable()
     {
+        //default config
+        saveDefaultConfig();
+
         Plugin base = Bukkit.getPluginManager().getPlugin("ShinyBase");
         if (base != null)
         {
             shinyBaseAPI = ((ShinyBase)base).getShinyBaseAPI();
         }
 
-        Plugin bridge = Bukkit.getPluginManager().getPlugin("ShinyBridge");
-        if (bridge != null)
-        {
-            ShinyBridge shinyBridge = (ShinyBridge) bridge;
-            shinyBridgeAPI = shinyBridge.getShinyBridgeAPI();
-        }
-
-        //new EventListener(this);
+        new EventListener(this);
         CommandExecutor commandExecutor = new CmdExecutor();
 
         //MB
@@ -60,7 +55,12 @@ public class ShinyChannels extends JavaPlugin
         getCommand("vipremove").setExecutor(commandExecutor);
         getCommand("viplist").setExecutor(commandExecutor);
 
-        PermissionChat.initialize(this, shinyBaseAPI, shinyBridgeAPI);
+        //T
+        shinyBaseAPI.takeOverBukkitCommand(this, "t", commandExecutor);
+        getCommand("mbon").setExecutor(commandExecutor);
+        getCommand("mboff").setExecutor(commandExecutor);
+
+        PermissionChat.initialize(this, shinyBaseAPI);
     }
 
     @Override

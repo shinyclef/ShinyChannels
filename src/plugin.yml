@@ -39,6 +39,12 @@ commands:
     viplist:
         description: Displays a list of players in the /vip channel (including offline players).
         usage: /<command>
-    mail:
-        description: Displays a list of players in the /vip channel (including offline players).
-        usage: YOLO!!!!
+    t:
+        description: Sends a message to normal user chat.
+        usage: /<command> (chat message)
+    mbon:
+        description: Makes /mb your default chat channel. Use /t to talk in regular chat.
+        usage: /mbon
+    mboff:
+        description: Makes regular chat your default chat.
+        usage: /mboff

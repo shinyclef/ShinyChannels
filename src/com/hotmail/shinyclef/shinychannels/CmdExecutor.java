@@ -3,6 +3,10 @@ package com.hotmail.shinyclef.shinychannels;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Author: Shinyclef
@@ -81,6 +85,24 @@ public class CmdExecutor implements CommandExecutor
         else if (com.equals("viplist"))
         {
             return PermissionChat.list(sender, args, "vip");
+        }
+
+        // -------------------- T -------------------- //
+
+
+        else if (com.equals("t"))
+        {
+            return PermissionChat.standardChat(sender, args);
+        }
+
+        else if (com.equals("mbon"))
+        {
+            return PermissionChat.changeModChatToggle(sender, true);
+        }
+
+        else if (com.equals("mboff"))
+        {
+            return PermissionChat.changeModChatToggle(sender, false);
         }
 
         return false;

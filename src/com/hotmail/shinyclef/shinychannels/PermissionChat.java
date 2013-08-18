@@ -1,16 +1,12 @@
 package com.hotmail.shinyclef.shinychannels;
 
 import com.hotmail.shinyclef.shinybase.ShinyBaseAPI;
-import com.hotmail.shinyclef.shinybridge.ShinyBridgeAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * User: Shinyclef
@@ -21,23 +17,16 @@ import java.util.Map;
 public class PermissionChat
 {
     private static ShinyChannels plugin;
-    private static ShinyBaseAPI shinyBaseAPI;
-    private static ShinyBridgeAPI shinyBridgeAPI;
+    private static ShinyBaseAPI base;
     private static Server server;
     private static Map<String, ChannelData> dataMap;
-    private static boolean hasBridge = true;
+    private static List<String> modChatToggledOff;
 
-    public static void initialize(ShinyChannels thePlugin, ShinyBaseAPI theShinyBaseAPI,
-                                  ShinyBridgeAPI theShinyBridgeAPI)
+    public static void initialize(ShinyChannels thePlugin, ShinyBaseAPI theShinyBaseAPI)
     {
         plugin = thePlugin;
-        shinyBaseAPI = theShinyBaseAPI;
-        shinyBridgeAPI = theShinyBridgeAPI;
+        base = theShinyBaseAPI;
         server = plugin.getServer();
-        if (shinyBridgeAPI == null)
-        {
-            hasBridge = false;
-        }
 
         //individual guest maps
         List<String> mbGuestList = new ArrayList<String>();
@@ -52,6 +41,13 @@ public class PermissionChat
                 ChatColor.YELLOW, "rolyd.exp", "rolyd.mod", sbGuestList));
         dataMap.put("vip", new ChannelData("vip", "VIP", "VIP", "[VIP]", ChatColor.YELLOW,
                 ChatColor.AQUA, "rolyd.vip", "rolyd.mod", vipGuestList));
+
+        //modChatToggleOffList
+        modChatToggledOff = plugin.getConfig().getStringList("ModChatOff");
+        if (modChatToggledOff == null)
+        {
+            modChatToggledOff = new ArrayList<String>();
+        }
     }
 
     private static class ChannelData
@@ -116,15 +112,15 @@ public class PermissionChat
         }
 
         //broadcast
-        broadcastMessage(ChatColor.RED + ch.tag + guestQty + sender.getName() + ": " +
+        base.broadcastPermissionMessage(ChatColor.RED + ch.tag + guestQty + sender.getName() + ": " +
                 ch.colour + sentence, ch.chatPerm);
 
         //guest broadcast
         for (String playerName : ch.guestList)
         {
-            if (server.getOfflinePlayer(playerName).isOnline())
+            if (base.isOnlineAnywhere(playerName))
             {
-                server.getPlayer(playerName).sendMessage(ChatColor.RED + ch.tag + " " + sender.getName() +
+                base.sendMessage(playerName, ChatColor.RED + ch.tag + " " + sender.getName() +
                         ": " + ch.colour + sentence);
             }
         }
@@ -158,7 +154,7 @@ public class PermissionChat
 
         //has played check
         String playerName = args[0].toLowerCase();
-        if (!shinyBaseAPI.isExistingPlayer(playerName))
+        if (!base.isExistingPlayer(playerName))
         {
             sender.sendMessage(ChatColor.RED + "That player does not exist.");
             return true;
@@ -173,24 +169,24 @@ public class PermissionChat
 
         //add to list and inform users
         ch.guestList.add(playerName);
-        server.broadcast(ch.colourHighlight + playerName + ch.colour
+        base.broadcastPermissionMessage(ch.colourHighlight + playerName + ch.colour
                 + " has been added to the " + ch.nameNormal + " channel.", ch.chatPerm);
 
         //notify guests
         for (String listName : ch.guestList)
         {
-            if (server.getOfflinePlayer(listName).isOnline() && listName != playerName)
+            if (base.isOnlineAnywhere(listName) && !listName.equals(playerName))
             {
-                server.getPlayer(listName).sendMessage(ch.colourHighlight + playerName + ch.colour
+                base.sendMessage(listName, ch.colourHighlight + playerName + ch.colour
                         + " has been added to the " + ch.nameNormal + " channel.");
             }
         }
 
         //notify added player if online
-        if (server.getOfflinePlayer(args[0]).isOnline())
+        if (base.isOnlineAnywhere(args[0]))
         {
-            plugin.getServer().getPlayer(playerName).sendMessage(ch.colour +
-                    "You have been added to the " + ch.nameNormal + " channel. Type " + ch.colourHighlight +
+            base.sendMessage(args[0], ch.colour + "You have been added to the " +
+                    ch.nameNormal + " channel. Type " + ch.colourHighlight +
                     "/" + ch.channel + " [message]" + ch.colour + " to post a message.");
         }
 
@@ -223,7 +219,7 @@ public class PermissionChat
 
         //has played check
         String playerName = args[0].toLowerCase();
-        if (!shinyBaseAPI.isExistingPlayer(playerName))
+        if (!base.isExistingPlayer(playerName))
         {
             sender.sendMessage(ChatColor.RED + "That player does not exist.");
             return true;
@@ -238,23 +234,23 @@ public class PermissionChat
 
         //remove from list and inform users
         ch.guestList.remove(playerName);
-        server.broadcast(ch.colourHighlight + playerName + ch.colour +
+        base.broadcastPermissionMessage(ch.colourHighlight + playerName + ch.colour +
                 " has been removed from the " + ch.nameNormal + " channel.", ch.chatPerm);
 
         //notify guests
         for (String name : ch.guestList)
         {
-            if (server.getOfflinePlayer(name).isOnline())
+            if (base.isOnlineAnywhere(name))
             {
-                server.getPlayer(name).sendMessage(ch.colourHighlight + playerName + ch.colour +
+                base.sendMessage(name, ch.colourHighlight + playerName + ch.colour +
                         " has been removed from the " + ch.nameNormal + " channel.");
             }
         }
 
         //notify removed player if online
-        if (server.getOfflinePlayer(args[0]).isOnline())
+        if (base.isOnlineAnywhere(args[0]))
         {
-            plugin.getServer().getPlayer(playerName).sendMessage(ChatColor.BLUE +
+            base.sendMessage(args[0], ChatColor.BLUE +
                     "You have been removed from the " + ch.nameNormal + " channel.");
         }
 
@@ -293,25 +289,69 @@ public class PermissionChat
         return true;
     }
 
-    /* Helpers */
-    private static void broadcastMessage(String message, String permission)
+    public static boolean standardChat(CommandSender sender, String[] args)
     {
-        //send to bridge clients if we have bridge
-        if (hasBridge)
+        String sentence;
+        if (args.length > 0)
         {
-            shinyBridgeAPI.broadcastMessage(message, permission, true);
+            sentence = ShinyChannels.makeSentence(args);
         }
         else
         {
-            //standard broadcast
-            server.broadcast(message, permission);
+            sentence = "";
         }
+
+        if (sentence.equals(""))
+        {
+            return true; //do nothing!
+        }
+
+        if (sender instanceof Player)
+        {
+            if (!modChatToggledOff.contains(sender.getName().toLowerCase()))
+            {
+                sentence = EventListener.MOD_BYPASS_CHAR + sentence;
+            }
+
+            ((Player) sender).chat(sentence);
+        }
+
+        return true;
+    }
+
+    public static boolean changeModChatToggle(CommandSender sender, boolean defaultIsMB)
+    {
+        if (!sender.hasPermission("rolyd.mod"))
+        {
+            sender.sendMessage(ChatColor.RED + "You do not have permission to do that.");
+            return true;
+        }
+
+        if (defaultIsMB)
+        {
+            modChatToggledOff.remove(sender.getName().toLowerCase());
+        }
+        else
+        {
+            modChatToggledOff.add(sender.getName().toLowerCase());
+        }
+
+        //feedback
+        sender.sendMessage(ChatColor.DARK_GREEN + "Default chat set to " + ChatColor.BLUE +
+                (defaultIsMB ? "MB" : "standard") + ChatColor.DARK_GREEN + ".");
+
+        //save config
+        plugin.getConfig().set("ModChatOff", modChatToggledOff);
+        plugin.saveConfig();
+
+        return true;
     }
 
 
+    /* Getters */
 
-    public static void test()
+    public static List<String> getModChatToggledOff()
     {
-        plugin.getServer().broadcastMessage("YOLO!!!");
+        return modChatToggledOff;
     }
 }

@@ -1,100 +1,65 @@
-/*package com.hotmail.shinyclef.shinychannels;
+package com.hotmail.shinyclef.shinychannels;
 
-import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
-*//**
- * User: Peter
+/*
+ * User: Shinyclef
  * Date: 14/07/13
  * Time: 5:23 AM
- *//*
+ */
 
 public class EventListener implements Listener
 {
+    private static ShinyChannels plugin;
+    public static final String MOD_BYPASS_CHAR = "ʘ";
+
     public EventListener(ShinyChannels plugin)
     {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        EventListener.plugin = plugin;
     }
 
     @EventHandler
-    public void eventCommandPreprocess(PlayerCommandPreprocessEvent e)
+    public void playerChat(AsyncPlayerChatEvent e)
     {
-        //cancel any commands that don't start with /mb
-        final String message = e.getMessage().trim();
-        if (!message.toLowerCase().startsWith("/mb"))
-        {
-            return;
-        }
+        Player player = e.getPlayer();
 
-        //setup command, sender and string for args
-        String command;
-        if (message.contains(" "))
+        //if player's a mod and they do not have modChat toggled off
+        if (player.hasPermission("rolyd.mod") &&
+                !PermissionChat.getModChatToggledOff().contains(player.getName().toLowerCase()))
         {
-            command = message.substring(1, message.indexOf(" ")).toLowerCase();
+            if (e.getMessage().startsWith(MOD_BYPASS_CHAR))
+            {
+                e.setMessage(e.getMessage().substring(1));
+            }
+            else
+            {
+                new ModChatEvent(e.getPlayer(), e.getMessage()).runTask(plugin);
+                e.setCancelled(true);
+            }
         }
-        else
-        {
-            command = message.substring(1).toLowerCase();
-        }
-        CommandSender sender = e.getPlayer();
-        String argsString;
-        if (message.contains(" "))
-        {
-             argsString = message.substring(message.indexOf(" ") + 1);
-        }
-        else
-        {
-            argsString = "";
-        }
-
-        //convert the list to args array
-        String [] args;
-        if (!argsString.equals(""))
-        {
-            args = argsString.split(" ");
-        }
-        else
-        {
-            args = new String[0];
-        }
-
-        //send all our data to parser
-        parseMBCommand(command, sender, args);
-
-        //cancel original command
-        e.setCancelled(true);
-
-        e.getPlayer().getServer().broadcastMessage("TEST");
     }
 
-    private boolean parseMBCommand(String command, CommandSender sender, String[] args)
+    private class ModChatEvent extends BukkitRunnable
     {
-        if (command.equals("mb"))
+        Player player;
+        String message;
+
+        private ModChatEvent(Player player, String message)
         {
-            return PermissionChat.chat(sender, args, "mb");
+            this.player = player;
+            this.message = message;
         }
 
-        if (command.equals("mbadd"))
+        @Override
+        public void run()
         {
-            return PermissionChat.add(sender, args, "mb");
+            player.performCommand("mb " + message);
         }
-
-        if (command.equals("mbremove"))
-        {
-            return PermissionChat.remove(sender, args, "mb");
-        }
-
-        if (command.equals("mblist"))
-        {
-            return PermissionChat.list(sender, args, "mb");
-        }
-
-        return true;
     }
-}*/
+}
